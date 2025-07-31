@@ -1,0 +1,293 @@
+//Orcs are monsters in the game, and among them, there is a rare type called Chief Orc.
+//All monsters have basic attributes such as health, attack, and defense.
+//Chief Orcs, as rare monsters, also have special attacks, which can be created freely.
+//Players also have health, attack, and defense stats.
+//When a player defeats a monster, they gain experience points.
+//The required experience to level up starts at 100 and increases by 100 with each level.
+//Players can attack monsters, and depending on their level, they can use specific skills.
+//Unlike a typical RPG with a skill tree, the skills are predefined and become available as the player's level increases.
+
+//오크는 게임 내 몬스터이며, 그 중에는 희귀한 종류인 '치프 오크'가 존재합니다.
+//모든 몬스터는 체력, 공격력, 방어력과 같은 기본 속성을 가지고 있습니다.
+//치프 오크는 희귀 몬스터로서 특수 공격을 가지고 있으며, 해당 공격은 자유롭게 설계해도 됩니다.
+//플레이어 역시 체력, 공격력, 방어력 속성을 갖습니다.
+//플레이어가 몬스터를 처치하면 경험치를 획득합니다.
+//레벨업에 필요한 경험치는 100부터 시작하며, 레벨이 오를 때마다 100씩 증가합니다.
+//플레이어는 몬스터를 공격할 수 있고, 레벨에 따라 특정 스킬을 사용할 수 있습니다.
+//일반적인 RPG처럼 스킬 트리를 사용하는 방식이 아니라, 미리 정해진 스킬이 레벨이 오름에 따라 개방되는 구조입니다.
+
+#include <iostream>
+#include <vector>
+#include <cstring>
+using namespace std;
+
+class Character
+{
+public:
+	int hp;//체력
+	int atk;//공격력
+	int def;//방어력
+	
+	Character() {};
+};
+class Player :public Character
+{
+public:
+	Player(int _xp, int _hp, int _atk, int _def)
+	{
+		xp = _xp; 
+		hp = _hp;
+		atk = _atk;
+		def = _def;
+	};
+	int xp = 0;
+	/// <summary>
+	/// lv 1 skill
+	/// </summary>
+	void heal()
+	{
+		hp += 50;
+	}
+	/// <summary>
+	/// lv2 skill
+	/// </summary>
+	void strong()
+	{
+		atk = atk * 2;
+	}
+	/// <summary>
+	/// ㅣv2 스킬 리버스
+	/// </summary>
+	void reverse_strong()
+	{
+		atk = atk / 2;
+	}
+
+	//레벨3스킬은 오크 한턴동안 얼리기--------------오크 멤버함수로 넣음
+	
+	/// <summary>
+	/// 경험치 차면 레벨업, 하나 죽일때마다 체크할것
+	/// </summary>
+	/// <param name="_xp"></param>
+	void levelup(int _xp)
+	{
+		if ((_xp >= 0) && (_xp < 100))
+		{
+			cout << endl << "LV. 1" << endl << "SKILL 1 available" << endl;
+		}
+		else if ((_xp >= 100) && (_xp < 300))
+		{
+			cout << endl << "LV. 2" << endl << "SKILL 2 available" << endl;
+		}
+		else if (_xp >= 300)
+		{
+			cout << endl << "LV. 3" << endl << "SKILL 3 available" << endl;
+		}
+		
+	}
+};
+class Orc :public Character
+{
+public:
+	
+	Orc(int _hp = 100, int _atk = 15, int _def = 3)
+	{
+		hp = _hp;
+		atk = _atk;
+		def = _def;
+	};
+	
+	/// <summary>
+	/// lv3 스킬, 오크얼리기
+	/// </summary>
+	void freeze_orc()
+	{
+		cout << endl << "빙결된 오크는 이번 턴에 행동을 할 수 없습니다" << endl;
+	}
+};
+class Cheif_orc :public Orc
+{
+public:
+	Cheif_orc(int _hp = 200, int _atk = 20, int _def = 5)//정예오크 스펙
+	{
+		hp = _hp;
+		atk = _atk;
+		def = _def;
+	};
+
+	/// <summary>
+	/// 공격력 두배함수
+	/// </summary>
+	/// <param name="_orc_atk"></param>
+	/// <returns></returns>
+	int attack_special(int _orc_atk)
+	{
+		return _orc_atk *= 2;
+	}
+
+	/// <summary>
+	/// 두배로공격후에 공격력 원상복구함수
+	/// </summary>
+	/// <param name="_orc_atk"></param>
+	/// <returns></returns>
+	int reverse_attack_special(int _orc_atk)
+	{
+		return _orc_atk /= 2;
+	}
+};
+
+int main()
+{
+	Player player(0, 200, 15, 5);//플레이어
+	Orc orc[5];//일반오크 다섯마리
+	Cheif_orc CO[3];//쎈오크세마리
+
+	int hit = 0;
+	
+	int siz_orc = sizeof orc/ sizeof orc[0];//일반오크 반복문 반복횟수
+	int siz_cheiforc = sizeof CO/ sizeof CO[0];//정예오크 반복문 반복횟수
+	while (true)
+	{
+		for (int i = 0; i < siz_orc; i++)//오크 다섯마리 먼저 처리
+		{
+			while (orc[i].hp > 0)
+			{
+
+				cout << endl << i+1 << "번째 오크를 마주쳤습니다! 오크의 체력은" << orc[i].hp << endl << "스킬을 선택하세요"
+					<< endl << "(0)일반공격(적 -15hp)  (1)1레벨스킬 회복(나 +50hp)  (2)2레벨스킬 두배로 공격(적 -30hp)  (3)3레벨스킬 오크얼리기"
+					<< endl << "잘못된 입력이나 레벨에 맞지않는 스킬을 선택할경우 오크에게 턴이 넘어갑니다" << endl << "현재 내 경험치: " << player.xp << endl
+					<< "현재 내 남은 체력은" << player.hp << endl;
+				cin >> hit;
+
+				if (hit == 0)//일반공격
+				{
+					cout << "오크에게 일반공격을 합니다! 오크의 체력이 15감소합니다" << endl;
+					orc[i].hp = (orc[i].hp - player.atk) + orc[i].def;
+					cout << i + 1 << "번째 오크의 남은 체력은 " << orc[i].hp << endl;
+				}
+				else if (hit == 1)//회복
+				{
+					player.heal();
+				}
+				else if ((hit == 2) && (player.xp >= 100))//두배공격
+				{
+					player.strong(); //공격력두배
+					orc[i].hp = (orc[i].hp - player.atk) + orc[i].def;//두배된 공격력으로 공격
+					player.reverse_strong();//공격력 원상복구
+
+				}
+				else if ((hit == 3) && (player.xp >= 300))//오크얼리기
+				{
+					cout << endl << "오크를 한 턴동안 얼렸습니다!" << endl;
+				}
+				else
+				{
+					cout << "잘못된 입력입니다. 오크에게 턴이 넘어갑니다" << endl;
+				}
+
+				if (orc[i].hp <= 0)
+				{
+					cout << endl << i+1 << "번째 오크 처치완료!" << endl;
+					player.xp = player.xp + 100;
+					player.levelup(player.xp); // 경험치 찼으면 레벨업시키기
+				}
+				else//오크 안죽었으면 맞아야됨
+				{
+					if ((hit == 3) && (player.xp >= 300))//3번스킬 오크얼리기
+					{
+						orc[i].freeze_orc();
+					}
+					else
+					{
+						cout << "오크의 턴 입니다! 오크가 당신을 공격합니다" << endl;
+						player.hp = (player.hp - orc[i].atk) + player.def;
+						cout << endl << "당신의 hp가 " << (orc[i].atk - player.def) << "만큼 감소했습니다! 남은 hp " << player.hp << endl;
+
+						if (player.hp <= 0)
+						{
+							cout << endl << "패배.. 게임을 종료합니다" << endl;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < siz_cheiforc; i++)//쎈오크 세마리 
+		{
+			while (CO[i].hp > 0)
+			{
+				cout << endl << i + 1 << "번째 *정예*오크를 마주쳤습니다! *정예*오크의 체력은 " << CO[i].hp << endl << "스킬을 선택하세요"
+					<< endl << "(0)일반공격(적 -15hp)  (1)1레벨스킬 회복(나 +50hp)  (2)2레벨스킬 두배로 공격(적 -30hp)  (3)3레벨스킬 오크얼리기"
+					<< endl << "잘못된 입력이나 레벨에 맞지않는 스킬을 선택할경우 오크에게 턴이 넘어갑니다" << endl << "현재 내 경험치: " << player.xp
+					<< endl << "현재 내 남은 hp는 " << player.hp << endl;
+				cin >> hit;
+
+				if (hit == 0)//일반공격
+				{
+					cout << "*정예*오크에게 일반공격을 합니다! *정예*오크의 체력이 15감소합니다" << endl;
+					CO[i].hp = CO[i].hp - player.atk + CO[i].def;
+					cout << i + 1 << "번째 *정예*오크의 남은 체력은 " << CO[i].hp << endl;
+				}
+				else if (hit == 1)//회복
+				{
+					player.heal();
+				}
+				else if ((hit == 2) && (player.xp > 100))//두배공격
+				{
+					player.strong(); //공격력두배
+					CO[i].hp = CO[i].hp - player.atk;//두배된 공격력으로 공격
+					player.reverse_strong();//공격력 원상복구
+
+				}
+				else if ((hit == 3) && (player.xp > 300))//오크얼리기
+				{
+					cout << "정예오크를 얼렸습니다!" << endl;
+				}
+				else
+				{
+					cout << "잘못된 입력입니다. *정예*오크에게 턴이 넘어갑니다" << endl;
+				}
+
+				if (CO[i].hp <= 0)
+				{
+					cout << endl << i + 1 << "번째 *정예*오크 처치완료!" << endl;
+					player.xp = player.xp + 100;
+					player.levelup(player.xp); // 경험치 찼으면 레벨업시키기
+				}
+				if (CO[2].hp <= 0)
+				{
+					cout << endl << "승리!! 게임을 종료합니다" << endl;
+					break;
+				}
+
+				else//오크 안죽었으면 내가 맞아야됨
+				{
+					if ((hit == 3) && (player.xp >= 300))//3번스킬 오크얼리기했을경우
+					{
+						CO[i].freeze_orc();
+					}
+					else if (CO[i].hp < 50)//정예오크 피 다 닳아가면 특수공격함
+					{
+						cout << "정예오크의 턴 입니다! 오크가 당신을 *특수*두배*공격합니다" << endl;
+						player.hp = player.hp - CO[i].attack_special(CO[i].atk) + player.def;
+						cout << endl << "당신의 hp가 " << CO[i].attack_special(CO[i].atk) - player.def << "만큼 감소했습니다! 남은 체력" << player.hp << endl;
+					}
+					else//정예오크 일반공격
+					{
+						cout << "정예오크의 턴 입니다! 오크가 당신을 공격합니다" << endl;
+						player.hp = player.hp - CO[i].atk + player.def;
+						cout << endl << "당신의 hp가 " << CO[i].atk - player.def << "만큼 감소했습니다! 남은 hp " << player.hp << endl;
+
+						if (player.hp <= 0)
+						{
+							cout << endl << "패배.. 게임을 종료합니다" << endl;
+							break;
+						}
+					}
+				}
+			}
+		}		
+	}
+	return 0;
+}
